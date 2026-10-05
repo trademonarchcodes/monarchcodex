@@ -1,24 +1,100 @@
 const form = document.getElementById("registerForm");
 const message = document.getElementById("formMessage");
+const params = new URLSearchParams(window.location.search);
+const loginMode = params.get("mode") === "login";
+
+function showMessage(text, type = "") {
+  if (!message) return;
+  message.textContent = text;
+  message.dataset.type = type;
+}
+
+function setLoading(isLoading) {
+  const submit = document.querySelector(".auth-submit");
+  if (!submit) return;
+
+  submit.disabled = isLoading;
+  submit.setAttribute("aria-busy", String(isLoading));
+
+  if (isLoading) {
+    submit.dataset.originalText = submit.innerHTML;
+    submit.innerHTML = loginMode ? "Signing in…" : "Creating account…";
+  } else if (submit.dataset.originalText) {
+    submit.innerHTML = submit.dataset.originalText;
+  }
+}
+
+async function sendAuth(action, payload) {
+  const response = await fetch(`api/auth.php?action=${encodeURIComponent(action)}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    credentials: "same-origin",
+    body: JSON.stringify(payload)
+  });
+
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("The server returned an invalid response.");
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Authentication failed.");
+  }
+
+  return result;
+}
 
 if (form && message) {
-  form.addEventListener("submit", event => {
+  form.addEventListener("submit", async event => {
     event.preventDefault();
-    const data = new FormData(form);
-    const password = data.get("password");
-    const confirmPassword = data.get("confirmPassword");
+    showMessage("");
 
-    if (password !== confirmPassword) {
-      message.textContent = "Your passwords do not match.";
+    const data = new FormData(form);
+    const email = String(data.get("email") || "").trim();
+    const password = String(data.get("password") || "");
+    const confirmPassword = String(data.get("confirmPassword") || "");
+
+    if (!loginMode && password !== confirmPassword) {
+      showMessage("Your passwords do not match.", "error");
       return;
     }
 
-    message.textContent = "Registration will be connected to secure account creation next.";
+    setLoading(true);
+
+    try {
+      const result = await sendAuth(loginMode ? "login" : "register", {
+        name: String(data.get("name") || "").trim(),
+        email,
+        password
+      });
+
+      showMessage(result.message, "success");
+
+      /*
+       * The member dashboard does not exist yet.
+       * Keep the authenticated session and return here until
+       * the dashboard is built and protected.
+       */
+      if (loginMode) {
+        window.location.href = "register.html";
+      } else {
+        form.reset();
+        window.history.replaceState({}, "", "register.html");
+      }
+    } catch (error) {
+      showMessage(error.message, "error");
+    } finally {
+      setLoading(false);
+    }
   });
 }
 
-const params = new URLSearchParams(window.location.search);
-if (params.get("mode") === "login") {
+if (loginMode) {
   const heading = document.querySelector(".auth-card-head h2");
   const eyebrow = document.querySelector(".auth-card-head .eyebrow");
   const submit = document.querySelector(".auth-submit");
