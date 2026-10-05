@@ -2,20 +2,22 @@
 declare(strict_types=1);
 
 /*
- * MONARCH CODEX — private database configuration.
+ * MONARCH CODEX database bootstrap.
  *
- * This file is intentionally kept free of real secrets in GitHub.
- * Enter the real database password on the Hostinger server only.
- *
- * Database host: localhost
- * Database name: u415805897_kingdomdb
- * Database user: u415805897_kingdomuser
+ * The real password MUST live in api/config.local.php on Hostinger.
+ * That local file is ignored by Git and must never be committed.
  */
 
-const DB_HOST = 'localhost';
-const DB_NAME = 'u415805897_kingdomdb';
-const DB_USER = 'u415805897_kingdomuser';
-const DB_PASSWORD = 'PASTE_HOSTINGER_DATABASE_PASSWORD_HERE';
+$localConfig = __DIR__ . '/config.local.php';
+
+if (is_file($localConfig)) {
+    require $localConfig;
+} else {
+    const DB_HOST = 'localhost';
+    const DB_NAME = 'u415805897_kingdomdb';
+    const DB_USER = 'u415805897_kingdomuser';
+    const DB_PASSWORD = 'PASTE_HOSTINGER_DATABASE_PASSWORD_HERE';
+}
 
 function db(): PDO
 {
