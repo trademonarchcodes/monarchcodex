@@ -42,12 +42,17 @@ function request_json(): array
 
 function clean_name(string $value): string
 {
-    return trim(preg_replace('/\s+/', ' ', $value) ?? '');
+    return trim(preg_replace('/s+/', ' ', $value) ?? '');
 }
 
 function clean_email(string $value): string
 {
     return strtolower(trim($value));
+}
+
+function clean_phone(string $value): string
+{
+    return trim(preg_replace('/s+/', ' ', $value) ?? '');
 }
 
 function same_origin_request(): bool
@@ -80,11 +85,16 @@ try {
 
     if ($action === 'register') {
         $name = clean_name((string)($data['name'] ?? ''));
+        $phone = clean_phone((string)($data['phone'] ?? ''));
         $email = clean_email((string)($data['email'] ?? ''));
         $password = (string)($data['password'] ?? '');
 
         if ($name === '' || mb_strlen($name) < 2 || mb_strlen($name) > 120) {
             respond(false, 'Please enter your full name.', [], 422);
+        }
+
+        if ($phone === '' || mb_strlen($phone) < 7 || mb_strlen($phone) > 30) {
+            respond(false, 'Please enter a valid phone number.', [], 422);
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -105,12 +115,13 @@ try {
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $insert = $pdo->prepare(
-            'INSERT INTO users (full_name, email, password_hash, role, account_status, terms_accepted_at)
-             VALUES (:full_name, :email, :password_hash, :role, :account_status, NOW())'
+            'INSERT INTO users (full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
+             VALUES (:full_name, :phone, :email, :password_hash, :role, :account_status, NOW())'
         );
 
         $insert->execute([
             'full_name' => $name,
+            'phone' => $phone,
             'email' => $email,
             'password_hash' => $hash,
             'role' => 'member',
@@ -127,6 +138,7 @@ try {
             'user' => [
                 'id' => $userId,
                 'name' => $name,
+                'phone' => $phone,
                 'email' => $email,
                 'role' => 'member',
             ],
