@@ -107,7 +107,8 @@ if (form && message) {
       showMessage(result.message, "success");
 
       if (loginMode) {
-        window.location.href = "register.html";
+        // Keep the user on the login screen until the member dashboard exists.
+        form.reset();
       } else {
         form.reset();
         window.history.replaceState({}, "", "register.html");
