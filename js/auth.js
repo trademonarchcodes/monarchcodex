@@ -71,6 +71,7 @@ if (form && message) {
 
     const data = new FormData(form);
     const email = String(data.get("email") || "").trim();
+    const phone = String(data.get("phone") || "").trim();
     const password = String(data.get("password") || "");
     const confirmPassword = String(data.get("confirmPassword") || "");
 
@@ -84,17 +85,13 @@ if (form && message) {
     try {
       const result = await sendAuth(loginMode ? "login" : "register", {
         name: String(data.get("name") || "").trim(),
+        phone,
         email,
         password
       });
 
       showMessage(result.message, "success");
 
-      /*
-       * The member dashboard does not exist yet.
-       * Keep the authenticated session and return here until
-       * the dashboard is built and protected.
-       */
       if (loginMode) {
         window.location.href = "register.html";
       } else {
@@ -117,6 +114,7 @@ if (loginMode) {
   const terms = document.querySelector(".auth-check");
   const divider = document.querySelector(".auth-divider");
   const login = document.querySelector(".auth-login");
+  const phone = document.querySelector('input[name="phone"]')?.closest("label");
 
   if (heading && eyebrow && submit && confirm && terms && divider && login) {
     eyebrow.textContent = "WELCOME BACK";
@@ -126,6 +124,7 @@ if (loginMode) {
     submit.innerHTML = 'Login to My Account <span>→</span>';
     login.style.display = "none";
     divider.style.display = "none";
+    if (phone) phone.style.display = "none";
   }
 }
 
