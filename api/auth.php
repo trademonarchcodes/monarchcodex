@@ -74,6 +74,22 @@ function clean_phone(string $value): string
     return trim(preg_replace('/\s+/', ' ', $value) ?? '');
 }
 
+function generate_uid(PDO $pdo): string
+{
+    for ($attempt = 0; $attempt < 10; $attempt++) {
+        $uid = 'MONARCH' . str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $stmt = $pdo->prepare('SELECT id FROM users WHERE uid = :uid LIMIT 1');
+        $stmt->execute(['uid' => $uid]);
+
+        if (!$stmt->fetch()) {
+            return $uid;
+        }
+    }
+
+    throw new RuntimeException('Unable to generate a unique Monarch UID.');
+}
+
 function same_origin_request(): bool
 {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
@@ -150,15 +166,17 @@ try {
         }
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
+        $uid = generate_uid($pdo);
 
         $insert = $pdo->prepare(
             'INSERT INTO users
-                (full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
+                (uid, full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
              VALUES
-                (:full_name, :phone, :email, :password_hash, :role, :account_status, NOW())'
+                (:uid, :full_name, :phone, :email, :password_hash, :role, :account_status, NOW())'
         );
 
         $insert->execute([
+            'uid' => $uid,
             'full_name' => $name,
             'phone' => $phone,
             'email' => $email,
@@ -176,6 +194,7 @@ try {
         respond(true, 'Account created successfully.', [
             'user' => [
                 'id' => $userId,
+                'uid' => $uid,
                 'name' => $name,
                 'phone' => $phone,
                 'email' => $email,
