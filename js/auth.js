@@ -24,6 +24,21 @@ function setLoading(isLoading) {
   }
 }
 
+function setupPasswordToggles() {
+  document.querySelectorAll(".password-toggle").forEach(toggle => {
+    toggle.addEventListener("click", () => {
+      const field = toggle.closest(".password-field");
+      const input = field?.querySelector("input");
+      if (!input) return;
+
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      toggle.setAttribute("aria-pressed", String(!showing));
+      toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+  });
+}
+
 async function sendAuth(action, payload) {
   const response = await fetch(`api/auth.php?action=${encodeURIComponent(action)}`, {
     method: "POST",
@@ -113,3 +128,5 @@ if (loginMode) {
     divider.style.display = "none";
   }
 }
+
+setupPasswordToggles();
