@@ -4,20 +4,17 @@ declare(strict_types=1);
 /*
  * MONARCH CODEX database bootstrap.
  *
- * The real password MUST live in api/config.local.php on Hostinger.
- * That local file is ignored by Git and must never be committed.
+ * The real database credentials belong only in api/config.local.php on
+ * Hostinger. That file is ignored by Git and must never be committed.
  */
 
 $localConfig = __DIR__ . '/config.local.php';
 
-if (is_file($localConfig)) {
-    require $localConfig;
-} else {
-    const DB_HOST = 'localhost';
-    const DB_NAME = 'u415805897_kingdomdb';
-    const DB_USER = 'u415805897_kingdomuser';
-    const DB_PASSWORD = 'PASTE_HOSTINGER_DATABASE_PASSWORD_HERE';
+if (!is_file($localConfig)) {
+    throw new RuntimeException('Database configuration file is missing.');
 }
+
+require_once $localConfig;
 
 function db(): PDO
 {
@@ -27,8 +24,10 @@ function db(): PDO
         return $pdo;
     }
 
-    if (DB_PASSWORD === 'PASTE_HOSTINGER_DATABASE_PASSWORD_HERE') {
-        throw new RuntimeException('Database connection is not configured yet.');
+    foreach (['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'] as $constant) {
+        if (!defined($constant)) {
+            throw new RuntimeException('Database configuration is incomplete.');
+        }
     }
 
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
