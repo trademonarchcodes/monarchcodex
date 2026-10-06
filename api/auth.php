@@ -253,5 +253,13 @@ try {
     respond(false, 'Unknown authentication action.', [], 404);
 } catch (Throwable $e) {
     error_log('MONARCH CODEX auth error: ' . $e->getMessage());
-    respond(false, 'The authentication service is temporarily unavailable.', [], 500);
+
+    // Temporary diagnostic response. This will be replaced with a generic
+    // production-safe message after the database issue is identified.
+    respond(
+        false,
+        'Authentication service error: ' . $e->getMessage(),
+        [],
+        500
+    );
 }
