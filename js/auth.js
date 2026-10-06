@@ -57,15 +57,22 @@ async function sendAuth(action, payload) {
     body: JSON.stringify(payload)
   });
 
-  let result;
+  const raw = await response.text();
+  let result = null;
+
   try {
-    result = await response.json();
+    result = raw ? JSON.parse(raw) : null;
   } catch {
-    throw new Error("The server returned an invalid response.");
+    const cleaned = raw.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    throw new Error(
+      cleaned
+        ? `Server error (HTTP ${response.status}): ${cleaned.slice(0, 240)}`
+        : `Server returned no valid response (HTTP ${response.status}).`
+    );
   }
 
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || "Authentication failed.");
+  if (!response.ok || !result?.success) {
+    throw new Error(result?.message || `Authentication failed (HTTP ${response.status}).`);
   }
 
   return result;
