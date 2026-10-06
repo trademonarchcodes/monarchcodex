@@ -1,7 +1,7 @@
 const form = document.getElementById("registerForm");
 const message = document.getElementById("formMessage");
 const params = new URLSearchParams(window.location.search);
-const loginMode = params.get("mode") === "login";
+const loginMode = params.get("mode") === "login" || window.location.pathname.endsWith("/login.html");
 
 function showMessage(text, type = "") {
   if (!message) return;
@@ -107,7 +107,6 @@ if (form && message) {
       showMessage(result.message, "success");
 
       if (loginMode) {
-        // Keep the user on the login screen until the member dashboard exists.
         form.reset();
       } else {
         form.reset();
@@ -121,7 +120,7 @@ if (form && message) {
   });
 }
 
-if (loginMode) {
+if (loginMode && window.location.pathname.endsWith("/register.html")) {
   const heading = document.querySelector(".auth-card-head h2");
   const eyebrow = document.querySelector(".auth-card-head .eyebrow");
   const submit = document.querySelector(".auth-submit");
