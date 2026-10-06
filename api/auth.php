@@ -18,7 +18,7 @@ header('Cache-Control: no-store');
 
 require_once __DIR__ . '/config.php';
 
-function respond(bool $success, string $message, array $extra = [], int $status = 200): never
+function respond(bool $success, string $message, array $extra = [], int $status = 200): void
 {
     http_response_code($status);
     echo json_encode(
@@ -42,7 +42,7 @@ function request_json(): array
 
 function clean_name(string $value): string
 {
-    return trim(preg_replace('/s+/', ' ', $value) ?? '');
+    return trim(preg_replace('/\s+/', ' ', $value) ?? '');
 }
 
 function clean_email(string $value): string
@@ -52,12 +52,13 @@ function clean_email(string $value): string
 
 function clean_phone(string $value): string
 {
-    return trim(preg_replace('/s+/', ' ', $value) ?? '');
+    return trim(preg_replace('/\s+/', ' ', $value) ?? '');
 }
 
 function same_origin_request(): bool
 {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
     if ($origin === '') {
         return true;
     }
@@ -65,7 +66,9 @@ function same_origin_request(): bool
     $host = $_SERVER['HTTP_HOST'] ?? '';
     $originHost = parse_url($origin, PHP_URL_HOST);
 
-    return $originHost !== false && $originHost !== null && hash_equals($host, $originHost);
+    return $originHost !== false
+        && $originHost !== null
+        && hash_equals($host, $originHost);
 }
 
 if (!same_origin_request()) {
@@ -115,8 +118,10 @@ try {
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $insert = $pdo->prepare(
-            'INSERT INTO users (full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
-             VALUES (:full_name, :phone, :email, :password_hash, :role, :account_status, NOW())'
+            'INSERT INTO users
+                (full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
+             VALUES
+                (:full_name, :phone, :email, :password_hash, :role, :account_status, NOW())'
         );
 
         $insert->execute([
@@ -198,6 +203,7 @@ try {
 
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
+
             setcookie(
                 session_name(),
                 '',
