@@ -212,7 +212,7 @@ try {
         }
 
         $stmt = $pdo->prepare(
-            'SELECT id, full_name, email, password_hash, role, account_status
+            'SELECT id, uid, full_name, email, password_hash, role, account_status
              FROM users
              WHERE email = :email
              LIMIT 1'
@@ -241,6 +241,7 @@ try {
         respond(true, 'Login successful.', [
             'user' => [
                 'id' => (int)$user['id'],
+                'uid' => $user['uid'],
                 'name' => $user['full_name'],
                 'email' => $user['email'],
                 'role' => $user['role'],
@@ -275,7 +276,7 @@ try {
         }
 
         $stmt = $pdo->prepare(
-            'SELECT id, full_name, email, role, account_status, created_at
+            'SELECT id, uid, full_name, email, role, account_status, created_at
              FROM users
              WHERE id = :id
              LIMIT 1'
@@ -292,6 +293,7 @@ try {
         respond(true, 'Authenticated.', [
             'user' => [
                 'id' => (int)$user['id'],
+                'uid' => $user['uid'],
                 'name' => $user['full_name'],
                 'email' => $user['email'],
                 'role' => $user['role'],
