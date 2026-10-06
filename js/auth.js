@@ -26,7 +26,7 @@ function setLoading(isLoading) {
 
 function setupPasswordToggles() {
   document.querySelectorAll(".password-toggle").forEach(toggle => {
-    toggle.addEventListener("click", () => {
+    const togglePassword = () => {
       const field = toggle.closest(".password-field");
       const input = field?.querySelector("input");
       if (!input) return;
@@ -35,6 +35,13 @@ function setupPasswordToggles() {
       input.type = showing ? "password" : "text";
       toggle.setAttribute("aria-pressed", String(!showing));
       toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    };
+    toggle.addEventListener("click", togglePassword);
+    toggle.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        togglePassword();
+      }
     });
   });
 }
