@@ -219,9 +219,6 @@ try {
         $_SESSION['user_id'] = (int)$user['id'];
         $_SESSION['role'] = $user['role'];
 
-        $touch = $pdo->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
-        $touch->execute(['id' => $user['id']]);
-
         respond(true, 'Login successful.', [
             'user' => [
                 'id' => (int)$user['id'],
