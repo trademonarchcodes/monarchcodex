@@ -1,22 +1,41 @@
 <?php
 declare(strict_types=1);
 
-$https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'secure' => $https,
-    'httponly' => true,
-    'samesite' => 'Lax',
-]);
-
-session_start();
+/*
+ * MONARCH CODEX authentication API.
+ *
+ * The shutdown handler is intentionally defensive during the initial Hostinger
+ * setup so PHP fatal errors occurring before the normal try/catch are returned
+ * as JSON instead of becoming an unexplained HTTP 500.
+ */
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-require_once __DIR__ . '/config.php';
+register_shutdown_function(function (): void {
+    $error = error_get_last();
+
+    if ($error === null) {
+        return;
+    }
+
+    $fatalTypes = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR];
+
+    if (!in_array($error['type'], $fatalTypes, true)) {
+        return;
+    }
+
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+    }
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'PHP fatal error: ' . $error['message'] . ' in ' . basename($error['file']) . ' on line ' . $error['line'],
+    ], JSON_UNESCAPED_SLASHES);
+});
 
 function respond(bool $success, string $message, array $extra = [], int $status = 200): void
 {
@@ -71,20 +90,35 @@ function same_origin_request(): bool
         && hash_equals($host, $originHost);
 }
 
-if (!same_origin_request()) {
-    respond(false, 'Request origin not allowed.', [], 403);
-}
-
-$action = $_GET['action'] ?? '';
-
 try {
-    $pdo = db();
+    $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'secure' => $https,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+
+    if (session_status() !== PHP_SESSION_ACTIVE && !session_start()) {
+        throw new RuntimeException('PHP session could not be started.');
+    }
+
+    require_once __DIR__ . '/config.php';
+
+    if (!same_origin_request()) {
+        respond(false, 'Request origin not allowed.', [], 403);
+    }
+
+    $action = $_GET['action'] ?? '';
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         respond(false, 'Method not allowed.', [], 405);
     }
 
     $data = request_json();
+    $pdo = db();
 
     if ($action === 'register') {
         $name = clean_name((string)($data['name'] ?? ''));
@@ -209,7 +243,7 @@ try {
                 '',
                 time() - 42000,
                 $params['path'],
-                $params['domain'],
+                $params['domain'] ?? '',
                 $params['secure'],
                 $params['httponly']
             );
@@ -254,8 +288,6 @@ try {
 } catch (Throwable $e) {
     error_log('MONARCH CODEX auth error: ' . $e->getMessage());
 
-    // Temporary diagnostic response. This will be replaced with a generic
-    // production-safe message after the database issue is identified.
     respond(
         false,
         'Authentication service error: ' . $e->getMessage(),
