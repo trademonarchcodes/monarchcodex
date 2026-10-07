@@ -2,29 +2,38 @@
 
 > Discover The Secret Of The King.
 
-The new MONARCH CODEX frontend starts here.
+## Stable foundation
 
-## Current scope
+The current `main` branch is the frozen foundation for the public website and basic authentication flow.
 
-This repository currently contains the public homepage foundation:
+### Working foundation
+- Public MONARCH CODEX homepage
+- Responsive navigation and mobile menu
+- Dedicated registration page
+- Dedicated login page
+- Email + password login
+- Password visibility controls
+- Registration phone normalization
+- Hostinger PHP authentication API
+- MySQL/MariaDB connection through Hostinger
+- Permanent MONARCH UID generation
+- Session-based authentication
+- Protected member dashboard
+- Dashboard logout
+- Safe public health check
 
-- Premium gold / black / white visual identity
-- Responsive navigation
-- Hero section
-- Investment introduction
-- Academy introduction
-- Monarch Intelligence
-- Sovereign Desk
-- Community positioning
-- Registration call-to-actions
-- Lightweight scroll and mobile-menu interactions
+### Current authentication path
 
-Backend, authentication, database, Hostinger deployment and Telegram integrations are intentionally not included yet.
+`index.html` → `register.html` → `dashboard.html`
 
-## CTA rule
+or
 
-Public member-area calls to action currently point to `register.html`.
+`index.html` → `login.html` → `dashboard.html`
 
-The login navigation is prepared for the future login page and currently uses `register.html?mode=login`.
+The dashboard loads the authenticated account from `api/auth.php?action=me`. Unauthenticated visitors are returned to the login page.
 
-These destinations will be replaced or completed when the dedicated registration and login pages are built.
+### Important deployment rule
+
+Do not make unrelated changes to the stable authentication, homepage, database bootstrap, or dashboard files while adding future features. Future features should be added incrementally and tested without replacing this foundation.
+
+Database credentials remain Hostinger-only in `api/config.local.php`, which is ignored by Git.
