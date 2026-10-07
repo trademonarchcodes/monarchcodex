@@ -121,12 +121,12 @@ if (form && message) {
       form.reset();
 
       if (loginMode) {
-        window.location.replace("/dashboard.html");
+        window.location.assign("/dashboard.html");
       } else {
         showMessage("Account created successfully! Welcome to MONARCH CODEX.", "success");
         setTimeout(() => {
-          window.location.replace("/dashboard.html?welcome=1");
-        }, 1800);
+          window.location.assign("/dashboard.html?welcome=1");
+        }, 1000);
       }
     } catch (error) {
       showMessage(error.message, "error");
