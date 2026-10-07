@@ -14,7 +14,7 @@ function showDashboardMessage(text, type = "") {
 }
 
 async function api(action, options = {}) {
-  const response = await fetch(`api/auth.php?action=${encodeURIComponent(action)}`, {
+  const response = await fetch(`/api/auth.php?action=${encodeURIComponent(action)}`, {
     ...options,
     headers: {
       "Accept": "application/json",
@@ -68,7 +68,7 @@ async function loadDashboard() {
     renderUser(result.user);
     showWelcomeMessage(result.user);
   } catch (error) {
-    window.location.replace("login.html");
+    showDashboardMessage(error.message || "We could not load your dashboard.", "error");
   }
 }
 
@@ -78,7 +78,7 @@ logoutButton?.addEventListener("click", async () => {
 
   try {
     await api("logout", { method: "POST" });
-    window.location.replace("login.html");
+    window.location.replace("/login.html");
   } catch (error) {
     logoutButton.disabled = false;
     logoutButton.textContent = "Logout";
