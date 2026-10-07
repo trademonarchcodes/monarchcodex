@@ -120,3 +120,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;opa
 .final-cta h2{letter-spacing:-.06em}
 @media(max-width:1050px){.ecosystem-grid{grid-template-columns:1fr 1fr}.investment-packages{grid-template-columns:repeat(2,1fr)}.hero{padding-top:75px}}
 @media(max-width:650px){.site-header{height:70px}.hero{padding-top:58px}.hero h1{font-size:44px}.hero-art{height:420px}.crown-mark{font-size:130px}.kingdom-strip{width:calc(100% - 28px);border-radius:18px;overflow:hidden}.ecosystem-grid{grid-template-columns:1fr}.ecosystem-card{min-height:315px}.investment-packages{grid-template-columns:1fr}.investment-card-wide{grid-column:auto}.investment-card{min-height:175px}.investment-card.featured{transform:none}.intelligence-band{padding:42px 23px;border-radius:27px}.community-panel{padding:48px 27px;border-radius:27px}}
+
+
+/* Official MONARCH CODEX logo */
+.brand-crown{width:36px;height:36px;display:grid;place-items:center;overflow:hidden;border-radius:9px;flex-shrink:0}.brand-crown img{width:100%;height:100%;display:block;object-fit:cover}.crown-mark{overflow:hidden;border-radius:50%}.crown-mark img{width:100%;height:100%;display:block;object-fit:cover}.community-crown{overflow:hidden;border-radius:22px}.community-crown img{width:100%;height:100%;display:block;object-fit:cover}.auth-logo-mark{width:42px;height:42px;display:block;overflow:hidden;border-radius:10px;flex-shrink:0}.auth-logo-mark img{width:100%;height:100%;display:block;object-fit:cover}
