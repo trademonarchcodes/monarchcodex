@@ -3,6 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    uid VARCHAR(13) NOT NULL,
     full_name VARCHAR(120) NOT NULL,
     phone VARCHAR(30) NOT NULL,
     email VARCHAR(190) NOT NULL,
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
+    UNIQUE KEY uq_users_uid (uid),
     UNIQUE KEY uq_users_email (email),
     KEY idx_users_role (role),
     KEY idx_users_status (account_status),
