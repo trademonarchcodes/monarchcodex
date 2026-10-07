@@ -118,12 +118,8 @@ if (form && message) {
 
       showMessage(result.message, "success");
 
-      if (loginMode) {
-        form.reset();
-      } else {
-        form.reset();
-        window.history.replaceState({}, "", "register.html");
-      }
+      form.reset();
+      window.location.replace("dashboard.html");
     } catch (error) {
       showMessage(error.message, "error");
     } finally {
