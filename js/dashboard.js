@@ -55,7 +55,7 @@ function renderUser(user) {
 
 async function loadDashboard() {
   try {
-    const result = await api("me");
+    const result = await api("me", { method: "POST" });
     renderUser(result.user);
   } catch (error) {
     window.location.replace("login.html");
