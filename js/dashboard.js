@@ -39,6 +39,15 @@ async function api(action, options = {}) {
   return result;
 }
 
+function showWelcomeMessage(user) {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("welcome") !== "1") return;
+
+  const name = user?.name || "Member";
+  showDashboardMessage(`Account created successfully! Welcome to MONARCH CODEX, ${name}.`, "success");
+  window.history.replaceState({}, "", "dashboard.html");
+}
+
 function renderUser(user) {
   const name = user?.name || "Member";
   const uid = user?.uid || "—";
@@ -57,6 +66,7 @@ async function loadDashboard() {
   try {
     const result = await api("me", { method: "POST" });
     renderUser(result.user);
+    showWelcomeMessage(result.user);
   } catch (error) {
     window.location.replace("login.html");
   }
