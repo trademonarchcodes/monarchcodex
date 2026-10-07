@@ -91,11 +91,30 @@ function fillKycForm(kyc,user){
   Object.entries(values).forEach(([name,value])=>{const input=kycForm.elements[name];if(input)input.value=value});
 }
 
+async function loadMemberData(){
+  try{
+    const result=await request("/api/member.php",{method:"POST"});
+    const s=result.summary||{};
+    const money=(value)=>"$"+Number(value||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+    set("availableBalance",money(s.available_balance));
+    set("earningsBalance",money(s.earnings));
+    set("depositedAmount",money(s.deposited_amount));
+    set("investedAmount",money(s.invested_amount));
+    set("monthlyInvestmentProfit",money(s.monthly_investment_profit));
+    set("academyAccess",result.access?.academy?"Approved":"Locked");
+    set("signalsAccess",result.access?.signals?"Approved":"Locked");
+  }catch(error){
+    showDashboardMessage(error.message||"Member data could not be loaded.","error");
+  }
+}
+
 async function loadKyc(user){
   try{
     const result=await kycApi("status",{method:"POST"});
     renderKyc(result.kyc);
     fillKycForm(result.kyc,user);
+    if(result.kyc?.status==="approved") await loadMemberData();
   }catch(error){
     renderKyc(null);
     if(kycNotice)kycNotice.textContent=error.message||"KYC service is not available yet. Please contact support.";
