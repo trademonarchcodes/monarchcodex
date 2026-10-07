@@ -58,7 +58,7 @@ function normalizePhone(value) {
 }
 
 async function sendAuth(action, payload) {
-  const response = await fetch(`api/auth.php?action=${encodeURIComponent(action)}`, {
+  const response = await fetch(`/api/auth.php?action=${encodeURIComponent(action)}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -121,11 +121,11 @@ if (form && message) {
       form.reset();
 
       if (loginMode) {
-        window.location.replace("dashboard.html");
+        window.location.replace("/dashboard.html");
       } else {
         showMessage("Account created successfully! Welcome to MONARCH CODEX.", "success");
         setTimeout(() => {
-          window.location.replace("dashboard.html?welcome=1");
+          window.location.replace("/dashboard.html?welcome=1");
         }, 1800);
       }
     } catch (error) {
