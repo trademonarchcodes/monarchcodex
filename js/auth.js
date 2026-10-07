@@ -1,7 +1,9 @@
 const form = document.getElementById("registerForm");
 const message = document.getElementById("formMessage");
 const params = new URLSearchParams(window.location.search);
-const loginMode = params.get("mode") === "login" || window.location.pathname.endsWith("/login.html");
+const isDedicatedLoginPage = window.location.pathname.endsWith("/login.html");
+const hasRegistrationFields = Boolean(document.querySelector('input[name="confirmPassword"]'));
+const loginMode = isDedicatedLoginPage || params.get("mode") === "login" || !hasRegistrationFields;
 
 function showMessage(text, type = "") {
   if (!message) return;
@@ -36,6 +38,7 @@ function setupPasswordToggles() {
       toggle.setAttribute("aria-pressed", String(!showing));
       toggle.setAttribute("aria-label", showing ? "Show password" : "Hide password");
     };
+
     toggle.addEventListener("click", togglePassword);
     toggle.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
@@ -44,6 +47,14 @@ function setupPasswordToggles() {
       }
     });
   });
+}
+
+function normalizePhone(value) {
+  let phone = String(value || "").trim().replace(/[()\-\.]/g, " ").replace(/\s+/g, " ");
+  if (phone.startsWith("00")) {
+    phone = "+" + phone.slice(2);
+  }
+  return phone;
 }
 
 async function sendAuth(action, payload) {
@@ -85,10 +96,11 @@ if (form && message) {
 
     const data = new FormData(form);
     const email = String(data.get("email") || "").trim();
-    const phone = String(data.get("phone") || "").trim();
+    const phone = normalizePhone(data.get("phone"));
     const password = String(data.get("password") || "");
     const confirmPassword = String(data.get("confirmPassword") || "");
 
+    // Login never checks confirmPassword because login only requires email + password.
     if (!loginMode && password !== confirmPassword) {
       showMessage("Your passwords do not match.", "error");
       return;
