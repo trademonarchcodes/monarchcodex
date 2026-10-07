@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Your MONARCH CODEX member dashboard.">
+  <title>Dashboard — MONARCH CODEX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="dashboard-page">
+  <header class="dashboard-header">
+    <a class="brand" href="index.html" aria-label="MONARCH CODEX home">
+      <span class="brand-crown">♛</span>
+      <span class="brand-copy"><strong>MONARCH</strong><small>CODEX</small></span>
+    </a>
+    <div class="dashboard-actions">
+      <span class="dashboard-status"><i></i> Account active</span>
+      <button id="logoutButton" class="dashboard-logout" type="button">Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <section class="dashboard-hero">
+      <div>
+        <p class="eyebrow">YOUR KINGDOM</p>
+        <h1>Welcome, <em id="memberName">Member</em>.</h1>
+        <p>Your MONARCH CODEX account is ready. This is your secure member home.</p>
+      </div>
+      <div class="uid-card">
+        <span>MONARCH UID</span>
+        <strong id="memberUid">Loading…</strong>
+      </div>
+    </section>
+
+    <p id="dashboardMessage" class="dashboard-message" aria-live="polite"></p>
+
+    <section class="dashboard-grid" aria-label="Member areas">
+      <article class="dashboard-card dashboard-card-featured">
+        <span class="dashboard-card-number">01</span>
+        <span class="dashboard-card-icon">♜</span>
+        <p>OPPORTUNITY</p>
+        <h2>Investment</h2>
+        <span>Investment packages and your future portfolio tools will live here.</span>
+        <b>Coming next →</b>
+      </article>
+
+      <article class="dashboard-card">
+        <span class="dashboard-card-number">02</span>
+        <span class="dashboard-card-icon">✦</span>
+        <p>SKILLS</p>
+        <h2>Academy</h2>
+        <span>Develop digital and financial skills inside the Codex.</span>
+        <b>Coming next →</b>
+      </article>
+
+      <article class="dashboard-card">
+        <span class="dashboard-card-number">03</span>
+        <span class="dashboard-card-icon">◈</span>
+        <p>KNOWLEDGE</p>
+        <h2>Monarch Intelligence</h2>
+        <span>Explore useful information, ideas and digital resources.</span>
+        <b>Coming next →</b>
+      </article>
+
+      <article class="dashboard-card">
+        <span class="dashboard-card-number">04</span>
+        <span class="dashboard-card-icon">◉</span>
+        <p>MARKET GUIDANCE</p>
+        <h2>Sovereign Desk</h2>
+        <span>Signals and guidance for your trading journey.</span>
+        <b>Coming next →</b>
+      </article>
+    </section>
+
+    <section class="profile-card">
+      <div>
+        <p class="eyebrow">ACCOUNT</p>
+        <h2>Your profile</h2>
+      </div>
+      <div class="profile-details">
+        <div><span>Full name</span><strong id="profileName">Loading…</strong></div>
+        <div><span>Email</span><strong id="profileEmail">Loading…</strong></div>
+        <div><span>MONARCH UID</span><strong id="profileUid">Loading…</strong></div>
+        <div><span>Role</span><strong id="profileRole">Loading…</strong></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dashboard-footer">
+    <span>© 2026 MONARCH CODEX</span>
+    <a href="index.html">Back to Kingdom</a>
+  </footer>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
