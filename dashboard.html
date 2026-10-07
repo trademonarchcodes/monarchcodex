@@ -6,13 +6,45 @@
   <meta name="description" content="Your MONARCH CODEX member dashboard.">
   <title>Dashboard — MONARCH CODEX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="dashboard-page">
+  <aside id="dashboardSidebar" class="dashboard-sidebar" aria-label="Member navigation">
+    <div class="sidebar-brand">
+      <a class="brand" href="index.html" aria-label="MONARCH CODEX home">
+        <span class="brand-crown"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"></span>
+        <span class="brand-copy"><strong>MONARCH</strong><small>CODEX</small></span>
+      </a>
+      <button id="sidebarClose" class="sidebar-close" type="button" aria-label="Close navigation">×</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="sidebar-link active" type="button" data-target="overview"><span>⌂</span>Overview</button>
+      <button class="sidebar-link" type="button" data-target="investmentCard"><span>♜</span>Investment</button>
+      <button class="sidebar-link" type="button" data-target="academyCard"><span>✦</span>Academy</button>
+      <button class="sidebar-link" type="button" data-target="intelligenceCard"><span>◈</span>Monarch Intelligence</button>
+      <button class="sidebar-link" type="button" data-target="sovereignCard"><span>◉</span>Sovereign Desk</button>
+      <button class="sidebar-link" type="button" data-target="profile"><span>◎</span>My Profile</button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-account">
+        <span class="sidebar-account-dot"></span>
+        <div><small>ACCOUNT</small><strong id="sidebarMemberName">Loading…</strong></div>
+      </div>
+      <button id="sidebarLogoutButton" class="sidebar-logout" type="button">Logout</button>
+    </div>
+  </aside>
+
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
   <header class="dashboard-header">
-    <a class="brand" href="index.html" aria-label="MONARCH CODEX home">
-      <span class="brand-crown"><img src="assets/monarch-mark.webp" alt="" aria-hidden="true"></span>
+    <button id="sidebarOpen" class="sidebar-open" type="button" aria-label="Open navigation" aria-controls="dashboardSidebar" aria-expanded="false">☰</button>
+    <a class="brand dashboard-header-brand" href="index.html" aria-label="MONARCH CODEX home">
+      <span class="brand-crown"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"></span>
       <span class="brand-copy"><strong>MONARCH</strong><small>CODEX</small></span>
     </a>
     <div class="dashboard-actions">
@@ -21,12 +53,12 @@
     </div>
   </header>
 
-  <main class="dashboard-shell">
+  <main id="overview" class="dashboard-main">
     <section class="dashboard-hero">
       <div>
         <p class="eyebrow">YOUR KINGDOM</p>
         <h1>Welcome, <em id="memberName">Member</em>.</h1>
-        <p>Your MONARCH CODEX account is ready. This is your secure member home.</p>
+        <p>Your MONARCH CODEX account is ready. Your member tools and account information are shown here.</p>
       </div>
       <div class="uid-card">
         <span>MONARCH UID</span>
@@ -34,10 +66,19 @@
       </div>
     </section>
 
+    <div class="dashboard-toolbar">
+      <div>
+        <span class="toolbar-title">Member dashboard</span>
+        <span class="toolbar-subtitle">Your secure MONARCH CODEX space</span>
+      </div>
+      <span class="dashboard-live-dot"><i></i> Session active</span>
+    </div>
+
     <p id="dashboardMessage" class="dashboard-message" aria-live="polite"></p>
+    <button id="retryButton" class="dashboard-retry" type="button" hidden>Retry account loading</button>
 
     <section class="dashboard-grid" aria-label="Member areas">
-      <article class="dashboard-card dashboard-card-featured">
+      <article id="investmentCard" class="dashboard-card dashboard-card-featured">
         <span class="dashboard-card-number">01</span>
         <span class="dashboard-card-icon">♜</span>
         <p>OPPORTUNITY</p>
@@ -46,7 +87,7 @@
         <b>Coming next →</b>
       </article>
 
-      <article class="dashboard-card">
+      <article id="academyCard" class="dashboard-card">
         <span class="dashboard-card-number">02</span>
         <span class="dashboard-card-icon">✦</span>
         <p>SKILLS</p>
@@ -55,7 +96,7 @@
         <b>Coming next →</b>
       </article>
 
-      <article class="dashboard-card">
+      <article id="intelligenceCard" class="dashboard-card">
         <span class="dashboard-card-number">03</span>
         <span class="dashboard-card-icon">◈</span>
         <p>KNOWLEDGE</p>
@@ -64,7 +105,7 @@
         <b>Coming next →</b>
       </article>
 
-      <article class="dashboard-card">
+      <article id="sovereignCard" class="dashboard-card">
         <span class="dashboard-card-number">04</span>
         <span class="dashboard-card-icon">◉</span>
         <p>MARKET GUIDANCE</p>
@@ -74,10 +115,11 @@
       </article>
     </section>
 
-    <section class="profile-card">
+    <section id="profile" class="profile-card">
       <div>
         <p class="eyebrow">ACCOUNT</p>
         <h2>Your profile</h2>
+        <p class="profile-intro">The details below come directly from your authenticated account.</p>
       </div>
       <div class="profile-details">
         <div><span>Full name</span><strong id="profileName">Loading…</strong></div>
