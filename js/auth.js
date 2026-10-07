@@ -119,7 +119,15 @@ if (form && message) {
       showMessage(result.message, "success");
 
       form.reset();
-      window.location.replace("dashboard.html");
+
+      if (loginMode) {
+        window.location.replace("dashboard.html");
+      } else {
+        showMessage("Account created successfully! Welcome to MONARCH CODEX.", "success");
+        setTimeout(() => {
+          window.location.replace("dashboard.html?welcome=1");
+        }, 1800);
+      }
     } catch (error) {
       showMessage(error.message, "error");
     } finally {
