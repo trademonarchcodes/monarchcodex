@@ -83,3 +83,13 @@ CREATE TABLE IF NOT EXISTS admin_access (
   PRIMARY KEY (id),
   UNIQUE KEY uq_admin_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- Initial role mapping requested for the existing admin accounts.
+INSERT INTO admin_access (user_id, monarch_admin, sovereign_admin, is_main_admin)
+SELECT id, 1, 1, 1 FROM users WHERE LOWER(email) = 'trademonarchofficial@gmail.com'
+ON DUPLICATE KEY UPDATE monarch_admin=VALUES(monarch_admin), sovereign_admin=VALUES(sovereign_admin), is_main_admin=VALUES(is_main_admin);
+
+INSERT INTO admin_access (user_id, monarch_admin, sovereign_admin, is_main_admin)
+SELECT id, 0, 1, 0 FROM users WHERE LOWER(email) = 'handsomeprovidence38@gmail.com'
+ON DUPLICATE KEY UPDATE sovereign_admin=VALUES(sovereign_admin);
