@@ -72,7 +72,7 @@ async function loadReferrals(){
 }
 async function heartbeat(){try{await fetch("/api/presence.php",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Accept":"application/json"}})}catch{}}
 function renderUser(user){
-  const name=user?.name||"Member",uid=user?.uid||"—",email=user?.email||"—",role=user?.role||"member";
+  const name=user?.name||"Monarch",uid=user?.uid||"—",email=user?.email||"—",role=user?.role||"member";
   [memberName,profileName,sidebarMemberName].forEach(x=>{if(x)x.textContent=name});
   if(memberUid)memberUid.textContent=uid;
   if(profileEmail)profileEmail.textContent=email;
@@ -107,7 +107,7 @@ function renderKyc(kyc){
   setKycLocked(!approved);
 
   if(kycNotice){
-    if(status==="not_submitted")kycNotice.textContent="Complete the form below. Your protected member services remain locked until an administrator approves your KYC.";
+    if(status==="not_submitted")kycNotice.textContent="Complete the form below. Your protected Monarch services remain locked until an administrator approves your KYC.";
     else if(status==="under_review")kycNotice.textContent="Your KYC has been submitted and is under review. Protected services remain locked until approval.";
     else if(status==="rejected")kycNotice.textContent=`KYC rejected. Reason: ${kyc.rejection_reason||"Please review your details and resubmit."}`;
     else kycNotice.textContent="KYC approved. Your protected member services are now unlocked.";
@@ -142,7 +142,7 @@ async function loadMemberData(){
     set("academyAccess",result.access?.academy?"Approved":"Locked");
     set("signalsAccess",result.access?.signals?"Approved":"Locked");
   }catch(error){
-    showDashboardMessage(error.message||"Member data could not be loaded.","error");
+    showDashboardMessage(error.message||"Monarch data could not be loaded.","error");
   }
 }
 
@@ -178,7 +178,7 @@ async function submitKyc(event){
 function showWelcomeMessage(user){
   const params=new URLSearchParams(window.location.search);
   if(params.get("welcome")!=="1")return;
-  showDashboardMessage(`Account created successfully! Welcome to MONARCH CODEX, ${user?.name||"Member"}.`,"success");
+  showDashboardMessage(`Account created successfully! Welcome to MONARCH CODEX, ${user?.name||"Monarch"}.`,"success");
   window.history.replaceState({}, "", "dashboard.html");
 }
 
@@ -213,7 +213,7 @@ function closeSidebar(){sidebar?.classList.remove("open");sidebarOverlay?.classL
 function openSidebar(){sidebar?.classList.add("open");sidebarOverlay?.classList.add("open");sidebarOpen?.setAttribute("aria-expanded","true")}
 
 document.querySelectorAll(".sidebar-link").forEach(link=>link.addEventListener("click",()=>{
-  if(link.classList.contains("nav-disabled")){showDashboardMessage("Complete KYC verification to unlock protected member services.","error");closeSidebar();document.getElementById("kycSection")?.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(link.classList.contains("nav-disabled")){showDashboardMessage("Complete KYC verification to unlock protected Monarch services.","error");closeSidebar();document.getElementById("kycSection")?.scrollIntoView({behavior:"smooth",block:"start"});return}
   document.querySelectorAll(".sidebar-link").forEach(x=>x.classList.remove("active"));link.classList.add("active");
   const target=document.getElementById(link.dataset.target);if(target)target.scrollIntoView({behavior:"smooth",block:"start"});closeSidebar();
 }));
