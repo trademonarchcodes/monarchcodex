@@ -1,4 +1,4 @@
--- MONARCH CODEX Monarch management, referrals, presence and notifications
+-- MONARCH CODEX Monarch management, referrals, presence and monarch_notifications
 -- Additive migration. Run after the existing foundation migrations.
 -- No existing table is dropped or recreated.
 
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS monarch_presence (
   KEY idx_last_seen (last_seen_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS notifications (
+CREATE TABLE IF NOT EXISTS monarch_notifications (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL,
   audience ENUM('monarch','admin') NOT NULL,
