@@ -121,7 +121,8 @@ if (form && message) {
       form.reset();
 
       if (loginMode) {
-        window.location.assign("/dashboard.html");
+        const role = result.user?.role || "member";
+        window.location.assign(role === "admin" || role === "sovereign_admin" ? "/admin.html" : "/dashboard.html");
       } else {
         showMessage("Account created successfully! Welcome to MONARCH CODEX.", "success");
         setTimeout(() => {
