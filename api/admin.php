@@ -68,7 +68,7 @@ try{
     $q->execute([(int)$a['user_id']]);
     $items=$q->fetchAll(PDO::FETCH_ASSOC);$unread=0;
     foreach($items as $item){if((int)$item['is_read']===0)$unread++;}
-    out(true,'',['monarch_notifications'=>$items,'unread'=>$unread]);
+    out(true,'',['notifications'=>$items,'unread'=>$unread]);
   }
 
   if($action==='notification_read'){
