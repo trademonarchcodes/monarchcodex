@@ -28,7 +28,7 @@ function require_monarch_admin(array $a):void{
 
 function notify_monarch(PDO $p,int $userId,string $title,string $message,string $type='general'):void{
   try{
-    $q=$p->prepare('INSERT INTO notifications (user_id,audience,title,message,type) VALUES (?,"monarch",?,?,?)');
+    $q=$p->prepare('INSERT INTO monarch_notifications (user_id,audience,title,message,type) VALUES (?,"monarch",?,?,?)');
     $q->execute([$userId,$title,$message,$type]);
   }catch(Throwable $e){ error_log('Monarch notification error: '.$e->getMessage()); }
 }
@@ -63,25 +63,25 @@ try{
     ]]);
   }
 
-  if($action==='notifications'){
-    $q=$p->prepare('SELECT id,title,message,type,is_read,created_at FROM notifications WHERE user_id=? AND audience="admin" ORDER BY created_at DESC LIMIT 30');
+  if($action==='monarch_notifications'){
+    $q=$p->prepare('SELECT id,title,message,type,is_read,created_at FROM monarch_notifications WHERE user_id=? AND audience="admin" ORDER BY created_at DESC LIMIT 30');
     $q->execute([(int)$a['user_id']]);
     $items=$q->fetchAll(PDO::FETCH_ASSOC);$unread=0;
     foreach($items as $item){if((int)$item['is_read']===0)$unread++;}
-    out(true,'',['notifications'=>$items,'unread'=>$unread]);
+    out(true,'',['monarch_notifications'=>$items,'unread'=>$unread]);
   }
 
   if($action==='notification_read'){
     $id=(int)($_POST['id']??0);
-    $q=$p->prepare('UPDATE notifications SET is_read=1 WHERE id=? AND user_id=? AND audience="admin"');
+    $q=$p->prepare('UPDATE monarch_notifications SET is_read=1 WHERE id=? AND user_id=? AND audience="admin"');
     $q->execute([$id,(int)$a['user_id']]);
     out(true,'Notification marked as read.');
   }
 
   if($action==='notification_read_all'){
-    $q=$p->prepare('UPDATE notifications SET is_read=1 WHERE user_id=? AND audience="admin" AND is_read=0');
+    $q=$p->prepare('UPDATE monarch_notifications SET is_read=1 WHERE user_id=? AND audience="admin" AND is_read=0');
     $q->execute([(int)$a['user_id']]);
-    out(true,'All notifications marked as read.');
+    out(true,'All monarch_notifications marked as read.');
   }
 
   if($action==='kyc_list'){
