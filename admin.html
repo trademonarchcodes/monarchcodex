@@ -10,11 +10,11 @@
 <body class="admin-page">
 <header class="admin-header">
 <a class="admin-brand" href="index.html"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"><span><b>MONARCH</b><small>CODEX</small></span></a>
-<div class="admin-header-right"><span id="adminIdentity">Checking access…</span><button id="adminLogout">Logout</button></div>
+<div class="admin-header-right"><div class="admin-notification-wrap"><button id="adminNotificationButton" class="admin-notification-button" type="button" aria-label="Admin notifications" aria-expanded="false">♢<i id="adminNotificationCount" hidden>0</i></button><div id="adminNotificationPanel" class="admin-notification-panel" hidden><div class="notification-head"><strong>Admin notifications</strong><button id="adminNotificationReadAll" type="button">Mark all read</button></div><div id="adminNotificationList" class="notification-list"><div class="notification-empty">No notifications yet.</div></div></div></div><span id="adminIdentity">Checking access…</span><button id="adminLogout">Logout</button></div>
 </header>
 <main class="admin-main">
 <div id="adminMessage" class="admin-message" aria-live="polite"></div>
-<section class="admin-hero"><div><p class="eyebrow">CONTROL ROOM</p><h1>Admin Dashboard</h1><p>Manage KYC review and protected member access from one administrator-only workspace.</p></div><span id="adminLevel" class="admin-level">Checking</span></section>
+<section class="admin-hero"><div><p class="eyebrow">CONTROL ROOM</p><h1>Admin Dashboard</h1><p>Manage Monarchs, KYC, balances, bonuses, referrals and protected access from one administrator-only workspace.</p></div><span id="adminLevel" class="admin-level">Checking</span></section>
 
 <section id="workspaceSwitcher" class="workspace-switcher" hidden>
 <div><p class="eyebrow">ADMIN WORKSPACE</p><h2>Switch workspace</h2><p>Main administrators can move between Monarch Codex administration and Sovereign Desk administration.</p></div>
@@ -27,10 +27,30 @@
 <div id="kycList" class="kyc-list"><div class="empty">Loading KYC records…</div></div>
 </section>
 
+<section id="monarchWorkspace" class="admin-section">
+<div class="section-top"><div><p class="eyebrow">KINGDOM MANAGEMENT</p><h2>Monarchs</h2><p>See Monarch account activity, online status and balances. Use View to inspect a read-only dashboard and Manage to issue controlled ledger adjustments.</p></div><span id="monarchCount" class="count-pill">0</span></div>
+<div class="filters monarch-filters"><input id="monarchSearch" placeholder="Search name, email, phone or MONARCH UID"><select id="monarchKyc"><option value="all">All KYC</option><option value="not_submitted">Not Submitted</option><option value="under_review">Under Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><select id="monarchOnline"><option value="all">All presence</option><option value="online">Online</option><option value="offline">Offline</option></select><button id="monarchRefresh">Refresh</button></div>
+<div id="monarchList" class="monarch-list"><div class="empty">Loading Monarchs…</div></div>
+</section>
+
 <section id="sovereignWorkspace" class="admin-section" hidden>
 <div class="section-top"><div><p class="eyebrow">SOVEREIGN DESK</p><h2>Sovereign Desk Admin</h2><p>This workspace is visible only to administrators with Sovereign Desk permission.</p></div><span class="count-pill">PROTECTED</span></div>
-<div class="sovereign-placeholder"><h3>Sovereign Desk control room</h3><p>Signals, desk permissions and desk-specific administration will be placed here. Member accounts never receive this workspace.</p></div>
+<div class="sovereign-placeholder"><h3>Sovereign Desk control room</h3><p>Signals, desk permissions and desk-specific administration will be placed here. Monarch accounts never receive this workspace.</p></div>
 </section>
 </main>
-<script src="js/admin.js?v=20261008-1"></script>
+<div id="balanceModal" class="admin-modal" hidden>
+  <div class="admin-modal-card">
+    <button id="balanceModalClose" class="admin-modal-close" type="button">×</button>
+    <p class="eyebrow">LEDGER CONTROL</p><h2>Manage Monarch balance</h2><p id="balanceTarget" class="modal-target">Select a Monarch</p>
+    <form id="balanceForm">
+      <div class="modal-balance"><span>Current balance</span><strong id="balanceCurrent">$0.00</strong></div>
+      <label>Action<select name="direction"><option value="credit">Increase / Credit</option><option value="debit">Reduce / Debit</option></select></label>
+      <label>Type<select name="category"><option value="balance">Balance adjustment</option><option value="profit">Profit</option><option value="bonus">Bonus</option><option value="refund">Refund</option><option value="fee">Fee</option></select></label>
+      <label>Amount (USD)<input name="amount" type="number" min="0.01" step="0.01" required placeholder="0.00"></label>
+      <label>Description <small>(optional)</small><textarea name="description" rows="3" placeholder="Reason or note for this ledger entry"></textarea></label>
+      <button class="approve modal-submit" type="submit">Apply ledger entry</button>
+    </form>
+  </div>
+</div>
+<script src="js/admin.js?v=20261008-2"></script>
 </body></html>
