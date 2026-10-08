@@ -5,11 +5,16 @@ let adminState=null;
 let activeMonarchId=0;
 
 async function api(action,body={}){
- const r=await fetch("/api/admin.php?action="+encodeURIComponent(action),{
+ let r;
+ try{
+  r=await fetch("/api/admin.php?action="+encodeURIComponent(action),{
    method:"POST",credentials:"same-origin",cache:"no-store",
    headers:{"Content-Type":"application/x-www-form-urlencoded","Accept":"application/json"},
    body:new URLSearchParams(body)
  });
+ }catch{
+  throw new Error("MONARCH CODEX server connection is unavailable. Please refresh and try again.");
+ }
  const x=await r.json().catch(()=>({success:false,message:"Invalid server response."}));
  if(!r.ok||!x.success)throw new Error(x.message||"Administrator request failed.");
  return x;
