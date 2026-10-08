@@ -52,6 +52,12 @@ function request_json(): array
     $raw = file_get_contents('php://input') ?: '';
     $data = json_decode($raw, true);
 
+    // GET-style dashboard/session checks intentionally send no JSON body.
+    // Treat an empty body as an empty request instead of rejecting valid POST actions.
+    if ($raw === '' || trim($raw) === '') {
+        return [];
+    }
+
     if (!is_array($data)) {
         respond(false, 'Invalid request.', [], 400);
     }
