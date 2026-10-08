@@ -150,11 +150,15 @@ async function loadDashboard(){
   showDashboardMessage("Loading your account…");
   try{
     const result=await auth("me",{method:"POST"});
-    window.__memberUser=result.user;renderUser(result.user);showWelcomeMessage(result.user);
-    if(result.user?.role==="admin"||result.user?.role==="sovereign_admin"){
-      if(sovereignAdminNav)sovereignAdminNav.hidden=false;
-      if(sovereignCard)sovereignCard.hidden=false;
+    window.__memberUser=result.user;
+    if(result.user?.role && result.user.role!=="member"){
+      window.location.replace("/admin.html");
+      return;
     }
+    renderUser(result.user);showWelcomeMessage(result.user);
+    // Administrative controls live only in the separate admin dashboard.
+    if(sovereignAdminNav)sovereignAdminNav.hidden=true;
+    if(sovereignCard)sovereignCard.hidden=true;
     await loadKyc(result.user);
     if(!new URLSearchParams(window.location.search).has("welcome"))showDashboardMessage("Account information loaded.","success");
   }catch(error){
