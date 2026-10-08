@@ -25,6 +25,7 @@ try{
     COALESCE(SUM(CASE WHEN type="deposit" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) deposited,
     COALESCE(SUM(CASE WHEN type IN ("referral_earning","investment_profit") AND status IN ("approved","completed") THEN amount ELSE 0 END),0) earnings,
     COALESCE(SUM(CASE WHEN type="refund" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) refunds,
+    COALESCE(SUM(CASE WHEN type="adjustment" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) adjustments,
     COALESCE(SUM(CASE WHEN type="withdrawal" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) withdrawals,
     COALESCE(SUM(CASE WHEN type="investment_purchase" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) purchases,
     COALESCE(SUM(CASE WHEN type="fee" AND status IN ("approved","completed") THEN amount ELSE 0 END),0) fees
@@ -38,8 +39,8 @@ try{
     $valid=$row['status']==='approved' && (!$row['expires_at'] || strtotime($row['expires_at'])>time());
     $access[$row['feature']]=$valid;
   }
-  $deposited=(float)$w['deposited'];$earnings=(float)$w['earnings'];$refunds=(float)$w['refunds'];
-  $available=$deposited+$earnings+$refunds-(float)$w['withdrawals']-(float)$w['purchases']-(float)$w['fees'];
+  $deposited=(float)$w['deposited'];$earnings=(float)$w['earnings'];$refunds=(float)$w['refunds'];$adjustments=(float)$w['adjustments'];
+  $available=$deposited+$earnings+$refunds+$adjustments-(float)$w['withdrawals']-(float)$w['purchases']-(float)$w['fees'];
   member_json(true,'',[
     'locked'=>false,'kyc_status'=>$kycStatus,
     'summary'=>[
