@@ -201,6 +201,7 @@ async function loadDashboard(){
     await loadNotifications();
     await heartbeat();
     window.setInterval(heartbeat,30000);
+    window.setInterval(loadReferrals,30000);
     window.setInterval(loadNotifications,15000);
     if(!new URLSearchParams(window.location.search).has("welcome"))showDashboardMessage("Account information loaded.","success");
   }catch(error){
