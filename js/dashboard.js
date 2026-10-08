@@ -36,7 +36,12 @@ const copyReferralLink=document.getElementById("copyReferralLink");
 
 function showDashboardMessage(text,type=""){if(!dashboardMessage)return;dashboardMessage.textContent=text;dashboardMessage.dataset.type=type}
 async function request(url,options={}) {
-  const response=await fetch(url,{...options,headers:{"Accept":"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});
+  let response;
+  try{
+    response=await fetch(url,{...options,headers:{"Accept":"application/json",...(options.headers||{})},credentials:"same-origin",cache:"no-store"});
+  }catch{
+    throw new Error("MONARCH CODEX server connection is unavailable. Please refresh and try again.");
+  }
   const raw=await response.text(); let result;
   try{result=raw?JSON.parse(raw):null}catch{throw new Error(`Server returned an invalid response (HTTP ${response.status}).`)}
   if(!response.ok||!result?.success)throw new Error(result?.message||`Request failed (HTTP ${response.status}).`);
