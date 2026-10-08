@@ -23,6 +23,15 @@ function kyc_require_user(): int {
     return $id;
 }
 
+function kyc_require_member(): int {
+    $id = kyc_require_user();
+    $role = (string)($_SESSION['role'] ?? 'member');
+    if ($role !== 'member') {
+        kyc_json(false, 'KYC submission is available to members only.', [], 403);
+    }
+    return $id;
+}
+
 function kyc_upload(array $file, string $prefix): string {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
         throw new RuntimeException('A required document could not be uploaded.');
@@ -68,7 +77,7 @@ try {
         kyc_json(false, 'POST requests only.', [], 405);
     }
 
-    $userId = kyc_require_user();
+    $userId = kyc_require_member();
     $action = $_GET['action'] ?? 'status';
     $pdo = db();
 
@@ -125,10 +134,10 @@ try {
 
         $pdo->beginTransaction();
         if ($old) {
-            $stmt = $pdo->prepare('UPDATE kyc_submissions SET first_name=?, surname=?, middle_name=?, email=?, phone=?, nin_number=?, nin_hash=?, address=?, occupation=?, nin_front_path=?, nin_back_path=?, selfie_path=?, status='under_review', rejection_reason=NULL, reviewed_by=NULL, reviewed_at=NULL WHERE user_id=?');
+            $stmt = $pdo->prepare("UPDATE kyc_submissions SET first_name=?, surname=?, middle_name=?, email=?, phone=?, nin_number=?, nin_hash=?, address=?, occupation=?, nin_front_path=?, nin_back_path=?, selfie_path=?, status='under_review', rejection_reason=NULL, reviewed_by=NULL, reviewed_at=NULL WHERE user_id=?");
             $stmt->execute([$first,$surname,$middle ?: null,$email,$phone,$nin,$hash,$address,$occupation,$front,$back,$selfie,$userId]);
         } else {
-            $stmt = $pdo->prepare('INSERT INTO kyc_submissions (user_id,first_name,surname,middle_name,email,phone,nin_number,nin_hash,address,occupation,nin_front_path,nin_back_path,selfie_path,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'under_review')');
+            $stmt = $pdo->prepare("INSERT INTO kyc_submissions (user_id,first_name,surname,middle_name,email,phone,nin_number,nin_hash,address,occupation,nin_front_path,nin_back_path,selfie_path,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'under_review')");
             $stmt->execute([$userId,$first,$surname,$middle ?: null,$email,$phone,$nin,$hash,$address,$occupation,$front,$back,$selfie]);
         }
         $pdo->commit();
