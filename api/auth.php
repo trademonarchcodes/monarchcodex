@@ -113,21 +113,11 @@ function same_origin_request(): bool
 }
 
 try {
-    $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path' => '/',
-        'secure' => $https,
-        'httponly' => true,
-        'samesite' => 'Lax',
-    ]);
+    require_once __DIR__ . '/config.php';
 
     if (session_status() !== PHP_SESSION_ACTIVE && !session_start()) {
         throw new RuntimeException('PHP session could not be started.');
     }
-
-    require_once __DIR__ . '/config.php';
 
     if (!same_origin_request()) {
         respond(false, 'Request origin not allowed.', [], 403);
