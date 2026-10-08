@@ -34,7 +34,7 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
 </style>
 </head>
 <body class="dashboard-page">
-  <aside id="dashboardSidebar" class="dashboard-sidebar" aria-label="Member navigation">
+  <aside id="dashboardSidebar" class="dashboard-sidebar" aria-label="Monarch navigation">
     <div class="sidebar-brand">
       <a class="brand" href="index.html" aria-label="MONARCH CODEX home">
         <span class="brand-crown"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"></span>
@@ -50,6 +50,7 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
       <button class="sidebar-link locked-nav" type="button" data-target="intelligenceCard"><span>◈</span>Monarch Intelligence<i>Locked</i></button>
       <button class="sidebar-link locked-nav" type="button" data-target="signalsCard"><span>◉</span>Signals<i>Locked</i></button>
       <button id="sovereignAdminNav" class="sidebar-link admin-only" type="button" data-target="sovereignCard" hidden><span>◆</span>Sovereign Desk Admin</button>
+      <button class="sidebar-link" type="button" data-target="referralSection"><span>♛</span>Referrals</button>
       <button class="sidebar-link" type="button" data-target="profile"><span>◎</span>My Profile</button>
     </nav>
     <div class="sidebar-bottom">
@@ -67,6 +68,7 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
       <span class="brand-copy"><strong>MONARCH</strong><small>CODEX</small></span>
     </a>
     <div class="dashboard-actions">
+      <div class="notification-wrap"><button id="notificationButton" class="notification-button" type="button" aria-label="Notifications" aria-expanded="false"><span>♢</span><i id="notificationCount" hidden>0</i></button><div id="notificationPanel" class="notification-panel" hidden><div class="notification-head"><strong>Notifications</strong><button id="notificationReadAll" type="button">Mark all read</button></div><div id="notificationList" class="notification-list"><div class="notification-empty">No notifications yet.</div></div></div></div>
       <span class="dashboard-status"><i></i> Account active</span>
       <button id="logoutButton" class="dashboard-logout" type="button">Logout</button>
     </div>
@@ -76,14 +78,14 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
     <section class="dashboard-hero">
       <div>
         <p class="eyebrow">YOUR KINGDOM</p>
-        <h1>Welcome, <em id="memberName">Member</em>.</h1>
-        <p id="heroCopy">Complete KYC verification to unlock your MONARCH CODEX member tools.</p>
+        <h1>Welcome, <em id="memberName">Monarch</em>.</h1>
+        <p id="heroCopy">Complete KYC verification to unlock your MONARCH CODEX tools.</p>
       </div>
       <div class="uid-card"><span>MONARCH UID</span><strong id="memberUid">Loading…</strong></div>
     </section>
 
     <div class="dashboard-toolbar">
-      <div><span class="toolbar-title">Member dashboard</span><span class="toolbar-subtitle">Profile stays available while protected features remain gated until KYC approval.</span></div>
+      <div><span class="toolbar-title">Monarch dashboard</span><span class="toolbar-subtitle">Profile and referrals stay available while protected features remain gated until KYC approval.</span></div>
       <span id="kycBadge" class="kyc-badge">KYC CHECKING…</span>
     </div>
 
@@ -117,8 +119,8 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
       </form>
     </section>
 
-    <section id="protectedArea" class="protected-area" aria-label="Protected member tools">
-      <div class="section-heading compact"><div><p class="eyebrow">MEMBER SERVICES</p><h2>MONARCH CODEX</h2></div><span class="lock-label">🔒 KYC APPROVAL REQUIRED</span></div>
+    <section id="protectedArea" class="protected-area" aria-label="Protected Monarch tools">
+      <div class="section-heading compact"><div><p class="eyebrow">MONARCH SERVICES</p><h2>MONARCH CODEX</h2></div><span class="lock-label">🔒 KYC APPROVAL REQUIRED</span></div>
       <div class="dashboard-grid">
         <article id="investmentCard" class="dashboard-card dashboard-card-featured protected-card" data-feature="investment">
           <span class="dashboard-card-number">01</span><span class="dashboard-card-icon">♜</span><p>OPPORTUNITY</p><h2>Investment</h2>
@@ -152,6 +154,13 @@ html,body{margin:0!important;padding:0!important;min-height:100%!important}
         <div class="balance-card"><span>Earnings</span><strong id="earningsBalance">$0.00</strong><small>Referral earnings + realized investment profits.</small></div>
         <div class="balance-card"><span>Deposited amount</span><strong id="depositedAmount">$0.00</strong><small>Confirmed funding credited to the account.</small></div>
       </div>
+    </section>
+
+    <section id="referralSection" class="referral-section">
+      <div class="section-heading"><div><p class="eyebrow">THE KINGDOM GROWS</p><h2>Referrals</h2><p>Share your personal Monarch referral link and see the Monarchs who joined through you.</p></div><span id="referralTotal" class="status-pill">0 REFERRED</span></div>
+      <div class="referral-share"><div><span>REFERRAL CODE</span><strong id="referralCode">Loading…</strong></div><button id="copyReferralCode" type="button">Copy code</button></div>
+      <div class="referral-share"><div><span>YOUR REFERRAL LINK</span><strong id="referralLink">Loading…</strong></div><button id="copyReferralLink" type="button">Copy link</button></div>
+      <div id="referralList" class="referral-list"><div class="referral-empty">Loading referrals…</div></div>
     </section>
 
     <section id="profile" class="profile-card">
