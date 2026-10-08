@@ -136,7 +136,7 @@ try {
         // Notify only administrators responsible for Monarch/KYC operations.
         try {
             $adminQ = $pdo->query('SELECT user_id FROM admin_access WHERE monarch_admin=1');
-            $notify = $pdo->prepare('INSERT INTO notifications (user_id,audience,title,message,type) VALUES (?,"admin",?,?,?)');
+            $notify = $pdo->prepare('INSERT INTO monarch_notifications (user_id,audience,title,message,type) VALUES (?,"admin",?,?,?)');
             while ($adminId = $adminQ->fetchColumn()) {
                 $notify->execute([
                     (int)$adminId,
