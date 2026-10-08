@@ -4,6 +4,7 @@ const params = new URLSearchParams(window.location.search);
 const isDedicatedLoginPage = window.location.pathname.endsWith("/login.html");
 const hasRegistrationFields = Boolean(document.querySelector('input[name="confirmPassword"]'));
 const loginMode = isDedicatedLoginPage || params.get("mode") === "login" || !hasRegistrationFields;
+const referralCode = String(params.get("ref") || "").trim();
 
 function showMessage(text, type = "") {
   if (!message) return;
@@ -113,7 +114,8 @@ if (form && message) {
         name: String(data.get("name") || "").trim(),
         phone,
         email,
-        password
+        password,
+        referral_code: referralCode
       });
 
       showMessage(result.message, "success");
