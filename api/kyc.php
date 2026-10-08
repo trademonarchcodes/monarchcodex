@@ -133,6 +133,22 @@ try {
         }
         $pdo->commit();
 
+        // Notify only administrators responsible for Monarch/KYC operations.
+        try {
+            $adminQ = $pdo->query('SELECT user_id FROM admin_access WHERE monarch_admin=1');
+            $notify = $pdo->prepare('INSERT INTO notifications (user_id,audience,title,message,type) VALUES (?,"admin",?,?,?)');
+            while ($adminId = $adminQ->fetchColumn()) {
+                $notify->execute([
+                    (int)$adminId,
+                    'New KYC submission',
+                    $first . ' ' . $surname . ' has submitted KYC for review.',
+                    'kyc'
+                ]);
+            }
+        } catch (Throwable $notifyError) {
+            error_log('KYC admin notification error: ' . $notifyError->getMessage());
+        }
+
         if ($old) kyc_cleanup([$old['nin_front_path'] ?? null, $old['nin_back_path'] ?? null, $old['selfie_path'] ?? null]);
         kyc_json(true, 'KYC submitted successfully and is now under review.');
     }
