@@ -206,6 +206,22 @@ try {
 
         $userId = (int)$pdo->lastInsertId();
 
+        // New-account alerts go only to Monarch administrators.
+        try {
+            $adminQ = $pdo->query('SELECT user_id FROM admin_access WHERE monarch_admin=1');
+            $notifyAdmin = $pdo->prepare('INSERT INTO notifications (user_id,audience,title,message,type) VALUES (?,"admin",?,?,?)');
+            while ($adminId = $adminQ->fetchColumn()) {
+                $notifyAdmin->execute([
+                    (int)$adminId,
+                    'New Monarch registered',
+                    $name . ' created a new MONARCH CODEX account.',
+                    'registration'
+                ]);
+            }
+        } catch (Throwable $notifyAdminError) {
+            error_log('MONARCH registration admin notification error: ' . $notifyAdminError->getMessage());
+        }
+
         if ($referrerId > 0 && $referrerId !== $userId) {
             try {
                 $refInsert = $pdo->prepare('INSERT INTO monarch_referrals (referrer_user_id,referred_user_id,referral_code) VALUES (?,?,?)');
