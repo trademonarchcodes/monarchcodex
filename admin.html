@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard — MONARCH CODEX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css?v=20261008-1">
+</head>
+<body class="admin-page">
+<header class="admin-header">
+<a class="admin-brand" href="index.html"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"><span><b>MONARCH</b><small>CODEX</small></span></a>
+<div class="admin-header-right"><span id="adminIdentity">Checking access…</span><button id="adminLogout">Logout</button></div>
+</header>
+<main class="admin-main">
+<div id="adminMessage" class="admin-message" aria-live="polite"></div>
+<section class="admin-hero"><div><p class="eyebrow">CONTROL ROOM</p><h1>Admin Dashboard</h1><p>Manage KYC review and protected member access from one administrator-only workspace.</p></div><span id="adminLevel" class="admin-level">Checking</span></section>
+
+<section id="workspaceSwitcher" class="workspace-switcher" hidden>
+<div><p class="eyebrow">ADMIN WORKSPACE</p><h2>Switch workspace</h2><p>Main administrators can move between Monarch Codex administration and Sovereign Desk administration.</p></div>
+<div class="switch-buttons"><button class="workspace-btn active" data-workspace="monarch">MONARCH CODEX</button><button class="workspace-btn" data-workspace="sovereign">SOVEREIGN DESK</button></div>
+</section>
+
+<section id="kycWorkspace" class="admin-section">
+<div class="section-top"><div><p class="eyebrow">IDENTITY REVIEW</p><h2>KYC Review</h2><p>Review member identity submissions. Rejection always requires a reason.</p></div><span id="kycCount" class="count-pill">0</span></div>
+<div class="filters"><select id="kycStatus"><option value="all">All</option><option value="under_review">Under Review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><input id="kycSearch" placeholder="Search name, email or MONARCH UID"><button id="kycRefresh">Refresh</button></div>
+<div id="kycList" class="kyc-list"><div class="empty">Loading KYC records…</div></div>
+</section>
+
+<section id="sovereignWorkspace" class="admin-section" hidden>
+<div class="section-top"><div><p class="eyebrow">SOVEREIGN DESK</p><h2>Sovereign Desk Admin</h2><p>This workspace is visible only to administrators with Sovereign Desk permission.</p></div><span class="count-pill">PROTECTED</span></div>
+<div class="sovereign-placeholder"><h3>Sovereign Desk control room</h3><p>Signals, desk permissions and desk-specific administration will be placed here. Member accounts never receive this workspace.</p></div>
+</section>
+</main>
+<script src="js/admin.js?v=20261008-1"></script>
+</body></html>
