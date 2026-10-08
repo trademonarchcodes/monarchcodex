@@ -125,10 +125,10 @@ try {
 
         $pdo->beginTransaction();
         if ($old) {
-            $stmt = $pdo->prepare('UPDATE kyc_submissions SET first_name=?, surname=?, middle_name=?, email=?, phone=?, nin_number=?, nin_hash=?, address=?, occupation=?, nin_front_path=?, nin_back_path=?, selfie_path=?, status="under_review", rejection_reason=NULL, reviewed_by=NULL, reviewed_at=NULL WHERE user_id=?');
+            $stmt = $pdo->prepare('UPDATE kyc_submissions SET first_name=?, surname=?, middle_name=?, email=?, phone=?, nin_number=?, nin_hash=?, address=?, occupation=?, nin_front_path=?, nin_back_path=?, selfie_path=?, status='under_review', rejection_reason=NULL, reviewed_by=NULL, reviewed_at=NULL WHERE user_id=?');
             $stmt->execute([$first,$surname,$middle ?: null,$email,$phone,$nin,$hash,$address,$occupation,$front,$back,$selfie,$userId]);
         } else {
-            $stmt = $pdo->prepare('INSERT INTO kyc_submissions (user_id,first_name,surname,middle_name,email,phone,nin_number,nin_hash,address,occupation,nin_front_path,nin_back_path,selfie_path,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,"under_review")');
+            $stmt = $pdo->prepare('INSERT INTO kyc_submissions (user_id,first_name,surname,middle_name,email,phone,nin_number,nin_hash,address,occupation,nin_front_path,nin_back_path,selfie_path,status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'under_review')');
             $stmt->execute([$userId,$first,$surname,$middle ?: null,$email,$phone,$nin,$hash,$address,$occupation,$front,$back,$selfie]);
         }
         $pdo->commit();
@@ -156,6 +156,8 @@ try {
     kyc_json(false, 'Unknown KYC action.', [], 400);
 } catch (Throwable $e) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) $pdo->rollBack();
+    // Remove newly uploaded files if the database write fails after upload.
+    if (isset($front, $back, $selfie)) kyc_cleanup([$front, $back, $selfie]);
     error_log('KYC error: ' . $e->getMessage());
     kyc_json(false, 'We could not process your KYC request right now.', [], 500);
 }
