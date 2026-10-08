@@ -159,19 +159,69 @@ async function loadKyc(user){
   }
 }
 
+async function compressKycImage(file){
+  if(!file || file.size <= 2500000) return file;
+  if(!file.type.startsWith("image/")) return file;
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file);
+    const image=new Image();
+    image.onload=()=>{
+      try{
+        const maxSide=2400;
+        const scale=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));
+        canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+        const ctx=canvas.getContext("2d",{alpha:false});
+        ctx.drawImage(image,0,0,canvas.width,canvas.height);
+        canvas.toBlob(blob=>{
+          URL.revokeObjectURL(url);
+          if(!blob){reject(new Error("The KYC image could not be prepared for upload."));return;}
+          const safeName=(file.name||"kyc-image").replace(/\\.[^.]+$/,"")+".jpg";
+          resolve(new File([blob],safeName,{type:"image/jpeg",lastModified:Date.now()}));
+        },"image/jpeg",0.82);
+      }catch(error){URL.revokeObjectURL(url);reject(error)}
+    };
+    image.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("One of the KYC images could not be read."))};
+    image.src=url;
+  });
+}
+
+async function buildKycFormData(){
+  const formData=new FormData(kycForm);
+  for(const fieldName of ["nin_front","nin_back","selfie"]){
+    const input=kycForm.elements[fieldName];
+    const file=input?.files?.[0];
+    if(!file) continue;
+    const prepared=await compressKycImage(file);
+    if(prepared!==file){
+      formData.delete(fieldName);
+      formData.append(fieldName,prepared,prepared.name);
+    }
+  }
+  return formData;
+}
+
 async function submitKyc(event){
   event.preventDefault();
   if(!kycForm||!kycSubmitButton)return;
-  kycSubmitButton.disabled=true;kycSubmitButton.textContent="Submitting…";
+  kycSubmitButton.disabled=true;kycSubmitButton.textContent="Preparing documents…";
+  let submitted=false;
   try{
-    const result=await kycApi("submit",{method:"POST",body:new FormData(kycForm)});
+    const formData=await buildKycFormData();
+    kycSubmitButton.textContent="Submitting…";
+    const result=await kycApi("submit",{method:"POST",body:formData});
+    submitted=true;
     showDashboardMessage(result.message||"KYC submitted.","success");
     await loadKyc(window.__memberUser);
     document.getElementById("kycSection")?.scrollIntoView({behavior:"smooth",block:"start"});
   }catch(error){
-    showDashboardMessage(error.message||"KYC submission failed.","error");
+    showDashboardMessage(error.message||"KYC submission failed. Please try again.","error");
   }finally{
-    if(kycSubmitButton&&!kycSubmitButton.disabled)kycSubmitButton.textContent="Submit KYC for review";
+    if(kycSubmitButton){
+      kycSubmitButton.disabled=submitted;
+      if(!submitted)kycSubmitButton.textContent="Submit KYC for review";
+    }
   }
 }
 
