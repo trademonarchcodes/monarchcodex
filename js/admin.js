@@ -14,6 +14,11 @@ async function load(){
   $("#adminLevel").textContent=x.admin.is_main_admin?"MAIN ADMIN":(x.admin.sovereign_admin?"SOVEREIGN DESK ADMIN":"MONARCH CODEX ADMIN");
   if(x.admin.is_main_admin){$("#workspaceSwitcher").hidden=false}
   if(!x.admin.monarch_admin) $("#kycWorkspace").hidden=true;
+  // Sovereign Desk-only administrators land directly in their permitted workspace.
+  if(!x.admin.is_main_admin && !x.admin.monarch_admin && x.admin.sovereign_admin){
+   $("#sovereignWorkspace").hidden=false;
+   document.querySelectorAll(".workspace-btn").forEach(b=>b.classList.remove("active"));
+  }
   if(!x.admin.sovereign_admin) $(".workspace-btn[data-workspace=sovereign]").hidden=true;
   await listKyc();
  }catch(e){msg(e.message,"error");setTimeout(()=>location.href="/login.html",1800)}
