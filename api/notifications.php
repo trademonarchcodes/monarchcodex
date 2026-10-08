@@ -20,30 +20,30 @@ try{
   $action=$_GET['action']??'list';
 
   if($action==='list'){
-    $stmt=$pdo->prepare('SELECT id,title,message,type,is_read,created_at FROM notifications WHERE user_id=? AND audience="monarch" ORDER BY created_at DESC LIMIT 30');
+    $stmt=$pdo->prepare('SELECT id,title,message,type,is_read,created_at FROM monarch_notifications WHERE user_id=? AND audience="monarch" ORDER BY created_at DESC LIMIT 30');
     $stmt->execute([$userId]);
     $items=$stmt->fetchAll(PDO::FETCH_ASSOC);
     $unread=0;
     foreach($items as $item){if((int)$item['is_read']===0)$unread++;}
-    notification_json(true,'',['notifications'=>$items,'unread'=>$unread]);
+    notification_json(true,'',['monarch_notifications'=>$items,'unread'=>$unread]);
   }
 
   if($action==='read'){
     $id=(int)($_POST['id']??0);
     if($id<1) notification_json(false,'Invalid notification.',[],422);
-    $stmt=$pdo->prepare('UPDATE notifications SET is_read=1 WHERE id=? AND user_id=? AND audience="monarch"');
+    $stmt=$pdo->prepare('UPDATE monarch_notifications SET is_read=1 WHERE id=? AND user_id=? AND audience="monarch"');
     $stmt->execute([$id,$userId]);
     notification_json(true,'Notification marked as read.');
   }
 
   if($action==='read_all'){
-    $stmt=$pdo->prepare('UPDATE notifications SET is_read=1 WHERE user_id=? AND audience="monarch" AND is_read=0');
+    $stmt=$pdo->prepare('UPDATE monarch_notifications SET is_read=1 WHERE user_id=? AND audience="monarch" AND is_read=0');
     $stmt->execute([$userId]);
-    notification_json(true,'All notifications marked as read.');
+    notification_json(true,'All monarch_notifications marked as read.');
   }
 
   notification_json(false,'Unknown notification action.',[],404);
 }catch(Throwable $e){
-  error_log('Monarch notifications error: '.$e->getMessage());
+  error_log('Monarch monarch_notifications error: '.$e->getMessage());
   notification_json(false,'Notifications are temporarily unavailable.',[],500);
 }
