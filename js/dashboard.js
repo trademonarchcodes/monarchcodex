@@ -22,6 +22,17 @@ const sidebarOpen=document.getElementById("sidebarOpen");
 const sidebarClose=document.getElementById("sidebarClose");
 const logoutButton=document.getElementById("logoutButton");
 const sidebarLogoutButton=document.getElementById("sidebarLogoutButton");
+const notificationButton=document.getElementById("notificationButton");
+const notificationPanel=document.getElementById("notificationPanel");
+const notificationCount=document.getElementById("notificationCount");
+const notificationList=document.getElementById("notificationList");
+const notificationReadAll=document.getElementById("notificationReadAll");
+const referralCode=document.getElementById("referralCode");
+const referralLink=document.getElementById("referralLink");
+const referralTotal=document.getElementById("referralTotal");
+const referralList=document.getElementById("referralList");
+const copyReferralCode=document.getElementById("copyReferralCode");
+const copyReferralLink=document.getElementById("copyReferralLink");
 
 function showDashboardMessage(text,type=""){if(!dashboardMessage)return;dashboardMessage.textContent=text;dashboardMessage.dataset.type=type}
 async function request(url,options={}) {
@@ -34,6 +45,32 @@ async function request(url,options={}) {
 const auth=(action,options={})=>request(`/api/auth.php?action=${encodeURIComponent(action)}`,options);
 const kycApi=(action,options={})=>request(`/api/kyc.php?action=${encodeURIComponent(action)}`,options);
 
+function renderNotifications(items,unread){
+  if(notificationCount){notificationCount.textContent=String(unread||0);notificationCount.hidden=!unread;}
+  if(!notificationList)return;
+  notificationList.innerHTML=items?.length?items.map(n=>`<button class="notification-item ${Number(n.is_read)?"read":"unread"}" data-notification-id="${n.id}" type="button"><span><b>${escapeHtml(n.title)}</b><small>${escapeHtml(n.message)}</small><em>${new Date(n.created_at.replace(" ","T")).toLocaleString()}</em></span></button>`).join(""):'<div class="notification-empty">No notifications yet.</div>';
+}
+function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+async function loadNotifications(){
+  try{const result=await request("/api/notifications.php?action=list",{method:"POST"});renderNotifications(result.notifications,result.unread);}
+  catch(error){if(notificationList)notificationList.innerHTML='<div class="notification-empty">Notifications unavailable.</div>';}
+}
+async function markNotification(id){
+  try{await request("/api/notifications.php?action=read",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({id:String(id)})});await loadNotifications();}catch{}
+}
+async function loadReferrals(){
+  try{
+    const result=await request("/api/referrals.php",{method:"POST"});
+    const data=result.referral||{};
+    if(referralCode)referralCode.textContent=data.code||"—";
+    if(referralLink)referralLink.textContent=data.link||"—";
+    if(referralTotal)referralTotal.textContent=`${data.total||0} REFERRED`;
+    if(referralList){
+      referralList.innerHTML=data.referrals?.length?data.referrals.map(r=>`<article class="referral-card"><div><strong>${escapeHtml(r.full_name)}</strong><span>${escapeHtml(r.uid)} · Joined ${escapeHtml(r.created_at)}</span></div><div class="referral-status ${r.is_online?"online":"offline"}"><i></i>${r.is_online?"Online":"Offline"}</div></article>`).join(""):'<div class="referral-empty">No Monarchs have joined through your referral yet.</div>';
+    }
+  }catch(error){if(referralList)referralList.innerHTML='<div class="referral-empty">Referral information is temporarily unavailable.</div>';}
+}
+async function heartbeat(){try{await fetch("/api/presence.php",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Accept":"application/json"}})}catch{}}
 function renderUser(user){
   const name=user?.name||"Member",uid=user?.uid||"—",email=user?.email||"—",role=user?.role||"member";
   [memberName,profileName,sidebarMemberName].forEach(x=>{if(x)x.textContent=name});
@@ -160,6 +197,11 @@ async function loadDashboard(){
     if(sovereignAdminNav)sovereignAdminNav.hidden=true;
     if(sovereignCard)sovereignCard.hidden=true;
     await loadKyc(result.user);
+    await loadReferrals();
+    await loadNotifications();
+    await heartbeat();
+    window.setInterval(heartbeat,30000);
+    window.setInterval(loadNotifications,15000);
     if(!new URLSearchParams(window.location.search).has("welcome"))showDashboardMessage("Account information loaded.","success");
   }catch(error){
     showDashboardMessage(error.message||"We could not load your account information.","error");
@@ -177,6 +219,27 @@ document.querySelectorAll(".sidebar-link").forEach(link=>link.addEventListener("
 }));
 sidebarOpen?.addEventListener("click",openSidebar);sidebarClose?.addEventListener("click",closeSidebar);sidebarOverlay?.addEventListener("click",closeSidebar);
 retryButton?.addEventListener("click",loadDashboard);kycForm?.addEventListener("submit",submitKyc);
+notificationButton?.addEventListener("click",()=>{
+  const open=notificationPanel?.hidden===false;
+  if(notificationPanel)notificationPanel.hidden=open;
+  notificationButton.setAttribute("aria-expanded",String(!open));
+  if(!open)loadNotifications();
+});
+notificationReadAll?.addEventListener("click",async()=>{
+  try{await request("/api/notifications.php?action=read_all",{method:"POST"});await loadNotifications();}catch{}
+});
+notificationList?.addEventListener("click",e=>{
+  const item=e.target.closest("[data-notification-id]");
+  if(item)markNotification(item.dataset.notificationId);
+});
+document.addEventListener("click",e=>{
+  if(notificationPanel&&!notificationPanel.hidden&&!e.target.closest(".notification-wrap")){
+    notificationPanel.hidden=true;notificationButton?.setAttribute("aria-expanded","false");
+  }
+});
+copyReferralCode?.addEventListener("click",async()=>{if(referralCode?.textContent)try{await navigator.clipboard.writeText(referralCode.textContent);showDashboardMessage("Referral code copied.","success")}catch{}});
+copyReferralLink?.addEventListener("click",async()=>{if(referralLink?.textContent)try{await navigator.clipboard.writeText(referralLink.textContent);showDashboardMessage("Referral link copied.","success")}catch{}});
+
 
 async function logout(){
   [logoutButton,sidebarLogoutButton].forEach(x=>{if(x){x.disabled=true;x.textContent="Logging out…"}});
