@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monarch View — MONARCH CODEX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css?v=20261008-2">
+</head>
+<body class="admin-page">
+<header class="admin-header"><a class="admin-brand" href="admin.html"><img src="assets/monarch-mark.webp" alt="MONARCH CODEX"><span><b>MONARCH</b><small>CODEX</small></span></a><div class="admin-header-right"><span>READ-ONLY MONARCH VIEW</span><a class="admin-back" href="admin.html">← Back to Admin</a></div></header>
+<main class="admin-main">
+<div id="viewMessage" class="admin-message"></div>
+<section class="admin-hero"><div><p class="eyebrow">MONARCH PROFILE</p><h1 id="viewName">Loading…</h1><p id="viewMeta">Loading account information…</p></div><span id="viewPresence" class="admin-level">Checking</span></section>
+<section class="admin-section"><div class="section-top"><div><p class="eyebrow">ACCOUNT LEDGER</p><h2>Dashboard snapshot</h2></div><span id="viewBalance" class="count-pill">$0.00</span></div><div id="viewMetrics" class="monarch-metrics view-metrics"></div></section>
+<section class="admin-section"><div class="section-top"><div><p class="eyebrow">IDENTITY</p><h2>KYC</h2></div><span id="viewKyc" class="count-pill">Loading</span></div><div id="viewKycData" class="kyc-data"></div></section>
+<section class="admin-section"><div class="section-top"><div><p class="eyebrow">REFERRALS</p><h2>Referred Monarchs</h2></div><span id="viewReferralCount" class="count-pill">0</span></div><div id="viewReferrals" class="monarch-list"></div></section>
+<section class="admin-section"><div class="section-top"><div><p class="eyebrow">LEDGER</p><h2>Recent transactions</h2></div></div><div id="viewTransactions" class="ledger-list"></div></section>
+<section class="admin-section"><div class="section-top"><div><p class="eyebrow">ACCESS</p><h2>Academy & Signals</h2></div></div><div id="viewAccess" class="access-list"></div></section>
+</main>
+<script src="js/admin-monarch.js?v=20261008-1"></script>
+</body></html>
