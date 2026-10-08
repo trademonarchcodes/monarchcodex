@@ -59,15 +59,20 @@ function normalizePhone(value) {
 }
 
 async function sendAuth(action, payload) {
-  const response = await fetch(`/api/auth.php?action=${encodeURIComponent(action)}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    credentials: "same-origin",
-    body: JSON.stringify(payload)
-  });
+  let response;
+  try {
+    response = await fetch(`/api/auth.php?action=${encodeURIComponent(action)}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      credentials: "same-origin",
+      body: JSON.stringify(payload)
+    });
+  } catch {
+    throw new Error("MONARCH CODEX server connection is unavailable. Please refresh and try again.");
+  }
 
   const raw = await response.text();
   let result = null;
