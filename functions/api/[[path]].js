@@ -11,7 +11,7 @@
  * Do not put database passwords or API keys in this file.
  */
 export async function onRequest(context) {
-  const origin = String(context.env.HOSTINGER_API_ORIGIN || "").trim().replace(/\/$/, "");
+  const origin = String(context.env.HOSTINGER_API_ORIGIN || "https://aquamarine-eagle-131964.hostingersite.com").trim().replace(/\/$/, "");
 
   if (!origin) {
     return new Response(JSON.stringify({
