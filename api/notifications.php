@@ -25,7 +25,7 @@ try{
     $items=$stmt->fetchAll(PDO::FETCH_ASSOC);
     $unread=0;
     foreach($items as $item){if((int)$item['is_read']===0)$unread++;}
-    notification_json(true,'',['monarch_notifications'=>$items,'unread'=>$unread]);
+    notification_json(true,'',['notifications'=>$items,'unread'=>$unread]);
   }
 
   if($action==='read'){
