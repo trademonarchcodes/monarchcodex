@@ -174,6 +174,19 @@ try {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $uid = generate_uid($pdo);
 
+        // Referral links use the referrer's existing MONARCH UID as the referral code.
+        $referralCode = strtoupper(trim((string)($data['referral_code'] ?? '')));
+        $referrerId = 0;
+        if ($referralCode !== '') {
+            try {
+                $refStmt = $pdo->prepare('SELECT id FROM users WHERE UPPER(uid)=? LIMIT 1');
+                $refStmt->execute([$referralCode]);
+                $referrerId = (int)($refStmt->fetchColumn() ?: 0);
+            } catch (Throwable $referralLookupError) {
+                error_log('MONARCH referral lookup error: ' . $referralLookupError->getMessage());
+            }
+        }
+
         $insert = $pdo->prepare(
             'INSERT INTO users
                 (uid, full_name, phone, email, password_hash, role, account_status, terms_accepted_at)
@@ -192,6 +205,24 @@ try {
         ]);
 
         $userId = (int)$pdo->lastInsertId();
+
+        if ($referrerId > 0 && $referrerId !== $userId) {
+            try {
+                $refInsert = $pdo->prepare('INSERT INTO monarch_referrals (referrer_user_id,referred_user_id,referral_code) VALUES (?,?,?)');
+                $refInsert->execute([$referrerId,$userId,$referralCode]);
+
+                $notice = $pdo->prepare('INSERT INTO notifications (user_id,audience,title,message,type) VALUES (?,"monarch",?,?,?)');
+                $notice->execute([
+                    $referrerId,
+                    'New Monarch joined',
+                    $name . ' joined MONARCH CODEX using your referral link.',
+                    'referral'
+                ]);
+            } catch (Throwable $referralSaveError) {
+                // Registration must remain successful even if the optional referral layer is unavailable.
+                error_log('MONARCH referral save error: ' . $referralSaveError->getMessage());
+            }
+        }
 
         session_regenerate_id(true);
         $_SESSION['user_id'] = $userId;
