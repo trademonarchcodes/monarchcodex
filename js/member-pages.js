@@ -2,13 +2,13 @@ const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 const money=v=>"$"+Number(v||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
 let currentUser=null;
-async function api(url,options={}){let r;try{r=await fetch(url,{...options,credentials:"same-origin",cache:"no-store",headers:{"Accept":"application/json",...(options.headers||{})}})}catch{throw new Error("MONARCH CODEX server connection is unavailable. Please refresh and try again.")}const raw=await r.text();let x;try{x=raw?JSON.parse(raw):null}catch{throw new Error("Server returned an invalid response.")}if(!r.ok||!x?.success)throw new Error(x?.message||"Request failed.");return x}
+async function api(url,options={}){let r;try{r=await fetch(url,{...options,credentials:"same-origin",cache:"no-store",headers:{"Accept":"application/json",...(options.headers||{})}})}catch{const e=new Error("MONARCH CODEX server connection is unavailable. Please refresh and try again.");e.status=0;throw e}const raw=await r.text();let x;try{x=raw?JSON.parse(raw):null}catch{const e=new Error("Server returned an invalid response (HTTP "+r.status+").");e.status=r.status;throw e}if(!r.ok||!x?.success){const e=new Error(x?.message||"Request failed (HTTP "+r.status+").");e.status=r.status;throw e}return x}
 function message(t,type=""){const e=$("#message");if(e){e.textContent=t;e.className="message "+type}}
 function closeNav(){const s=$("#memberSidebar"),o=$("#memberOverlay"),b=$("#menuButton");s?.classList.remove("open");o?.classList.remove("open");b?.setAttribute("aria-expanded","false")}
 function openNav(){const s=$("#memberSidebar"),o=$("#memberOverlay"),b=$("#menuButton");s?.classList.add("open");o?.classList.add("open");b?.setAttribute("aria-expanded","true")}
 async function logout(){try{await api("/api/auth.php?action=logout",{method:"POST"});location.replace("/login.html")}catch(e){message(e.message,"error")}}
 function renderIdentity(){document.querySelectorAll("[data-user-name]").forEach(e=>e.textContent=currentUser.name||"Monarch");document.querySelectorAll("[data-user-uid]").forEach(e=>e.textContent=currentUser.uid||"—");const role=currentUser.role||"member";if(role!=="member"){location.replace("/admin.html");return false}return true}
-async function init(){try{const x=await api("/api/auth.php?action=me",{method:"POST"});currentUser=x.user;if(!renderIdentity())return;const page=document.body.dataset.page;await loadPage(page)}catch(e){message(e.message,"error");setTimeout(()=>location.replace("/login.html"),1600)}}
+async function init(){try{const x=await api("/api/auth.php?action=me",{method:"POST"});currentUser=x.user;if(!renderIdentity())return;const page=document.body.dataset.page;await loadPage(page)}catch(e){message(e.message+" If this happens immediately after login, the session check failed; the page will stay open so the error can be read.", "error");if(e.status===401){setTimeout(()=>location.replace("/login.html"),4000)}}}
 async function loadPage(page){
  if(page==="overview")return overview();
  if(page==="kyc")return kyc();
